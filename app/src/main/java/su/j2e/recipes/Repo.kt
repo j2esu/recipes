@@ -24,7 +24,7 @@ object Repo {
 
 data class Recipe(
     val title: String,
-    val img: String,
+    val imgUrl: String,
     val ingredients: List<String>,
     val url: String
 )

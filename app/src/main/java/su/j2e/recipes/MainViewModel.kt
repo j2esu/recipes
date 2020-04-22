@@ -16,11 +16,17 @@ interface MainViewModel {
 
 class MainViewModelImp(private val app: Application) : AndroidViewModel(app), MainViewModel {
 
-    override val recipes = MutableLiveData<List<Recipe>>(emptyList())
+    override val recipes = MutableLiveData<List<Recipe>>()
     override val loading = MutableLiveData(false)
     override val error = MutableLiveEvent<String>()
 
+    init {
+        loadRecipes("")
+    }
+
     override fun loadRecipes(query: String) {
+        if (loading.value == true) return
+
         loading.value = true
         viewModelScope.launch {
             when (val result = Repo.getRecipes(query)) {
@@ -28,6 +34,9 @@ class MainViewModelImp(private val app: Application) : AndroidViewModel(app), Ma
                     recipes.value = result.data
                 }
                 is Result.Error -> {
+                    if (recipes.value == null) {
+                        recipes.value = emptyList()
+                    }
                     error.send(app.getString(R.string.network_error))
                 }
             }
