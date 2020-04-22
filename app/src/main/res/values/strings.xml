@@ -3,4 +3,5 @@
     <string name="network_error">Network error</string>
     <string name="search">Search</string>
     <string name="no_recipes_found">No recipes found</string>
+    <string name="retry">Retry</string>
 </resources>

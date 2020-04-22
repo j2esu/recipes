@@ -10,8 +10,10 @@ import kotlinx.coroutines.launch
 interface MainViewModel {
     val recipes: LiveData<List<Recipe>>
     val loading: LiveData<Boolean>
+    val retryVisible: LiveData<Boolean>
     val error: LiveEvent<String>
     fun loadRecipes(query: String)
+    fun retry()
 }
 
 class MainViewModelImp(private val app: Application) : AndroidViewModel(app), MainViewModel {
@@ -19,6 +21,7 @@ class MainViewModelImp(private val app: Application) : AndroidViewModel(app), Ma
     override val recipes = MutableLiveData<List<Recipe>>()
     override val loading = MutableLiveData(false)
     override val error = MutableLiveEvent<String>()
+    override val retryVisible = MutableLiveData(false)
 
     init {
         loadRecipes("")
@@ -28,6 +31,7 @@ class MainViewModelImp(private val app: Application) : AndroidViewModel(app), Ma
         if (loading.value == true) return
 
         loading.value = true
+        retryVisible.value = false
         viewModelScope.launch {
             when (val result = Repo.getRecipes(query)) {
                 is Result.Success -> {
@@ -35,7 +39,7 @@ class MainViewModelImp(private val app: Application) : AndroidViewModel(app), Ma
                 }
                 is Result.Error -> {
                     if (recipes.value == null) {
-                        recipes.value = emptyList()
+                        retryVisible.value = true
                     }
                     error.send(app.getString(R.string.network_error))
                 }
@@ -43,4 +47,6 @@ class MainViewModelImp(private val app: Application) : AndroidViewModel(app), Ma
             loading.value = false
         }
     }
+
+    override fun retry() = loadRecipes("")
 }

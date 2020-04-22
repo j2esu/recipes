@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(it.url)))
         }
         binding.recipesRv.adapter = adapter
+        binding.retry.setOnClickListener { viewModel.retry() }
 
         viewModel.recipes.observe(this) {
             adapter.submitList(it)
@@ -32,6 +33,9 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.loading.observe(this) {
             binding.loadingProgress.isVisible = it
+        }
+        viewModel.retryVisible.observe(this) {
+            binding.retry.isVisible = it
         }
         viewModel.error.consume(this) {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()

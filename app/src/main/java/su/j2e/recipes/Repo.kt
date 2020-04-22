@@ -1,5 +1,6 @@
 package su.j2e.recipes
 
+import retrofit2.HttpException
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.IOException
@@ -18,6 +19,8 @@ object Repo {
                 Recipe(it.title, it.thumbnail, it.ingredients.split(", "), it.href)
             })
         } catch (ex: IOException) {
+            Result.Error(ex)
+        } catch (ex: HttpException) {
             Result.Error(ex)
         }
 }
